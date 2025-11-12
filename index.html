@@ -130,8 +130,36 @@
         .question-container {
             display: none;
             font-size: 18px;
-            text-align: center;
+            width: 100%;
+            height: 100%;
+            flex-direction: column;
+            justify-content: space-between;
             padding: 20px;
+        }
+
+        .question-text {
+            text-align: left;
+            font-size: 16px;
+        }
+
+        .answer-input-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex: 1;
+        }
+
+        .answer-input {
+            background: transparent;
+            border: none;
+            border-bottom: 2px solid #00ff00;
+            color: #00ff00;
+            font-size: 20px;
+            font-family: 'Courier New', monospace;
+            outline: none;
+            text-align: center;
+            width: 200px;
+            padding: 5px;
         }
 
         .loading-container {
@@ -140,12 +168,12 @@
         }
 
         @keyframes shake {
-            0%, 100% { transform: translate(-50%, -50%) translateX(-3.1%) translateY(-67%); }
-            10%, 30%, 50%, 70%, 90% { transform: translate(-50%, -50%) translateX(-5.1%) translateY(-67%); }
-            20%, 40%, 60%, 80% { transform: translate(-50%, -50%) translateX(-1.1%) translateY(-67%); }
+            0%, 100% { transform: translateX(0); }
+            10%, 30%, 50%, 70%, 90% { transform: translateX(-10px); }
+            20%, 40%, 60%, 80% { transform: translateX(10px); }
         }
 
-        .shake {
+        .text-content.shake {
             animation: shake 0.5s;
         }
 
@@ -243,7 +271,10 @@
                 </div>
                 <div class="loading-container" id="loadingContainer">|</div>
                 <div class="question-container" id="questionContainer">
-                    what is my favorite animal
+                    <div class="question-text">what is my favorite animal</div>
+                    <div class="answer-input-container">
+                        <input type="text" class="answer-input" id="answerInput" placeholder="">
+                    </div>
                 </div>
             </div>
             <div class="screen-surface"></div>
@@ -309,9 +340,11 @@
         const loadingContainer = document.getElementById('loadingContainer');
         const questionContainer = document.getElementById('questionContainer');
         const screenOverlay = document.getElementById('screenOverlay');
+        const textContent = document.getElementById('textContent');
         const stickyNotes = document.querySelectorAll('.sticky-note');
 
-        const correctPassword = '1234'; // 正确密码
+        const correctPassword = '6643'; // 正确密码
+        const correctAnswer = 'cat'; // 正确答案
         let allNotesRemoved = false;
 
         // 检测便签是否离开屏幕区域
@@ -394,12 +427,12 @@
                 }, 600);
             } else {
                 // 密码错误 - 清除并晃动
-                screenOverlay.classList.add('shake');
+                textContent.classList.add('shake');
                 inputs.forEach(input => input.value = '');
                 digit1.focus();
 
                 setTimeout(() => {
-                    screenOverlay.classList.remove('shake');
+                    textContent.classList.remove('shake');
                 }, 500);
             }
         }
@@ -424,7 +457,43 @@
 
         function showQuestionScreen() {
             loadingContainer.style.display = 'none';
-            questionContainer.style.display = 'block';
+            questionContainer.style.display = 'flex';
+
+            // 聚焦答案输入框
+            const answerInput = document.getElementById('answerInput');
+            answerInput.focus();
+
+            // 监听答案输入
+            answerInput.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') {
+                    checkAnswer();
+                }
+            });
+        }
+
+        function checkAnswer() {
+            const answerInput = document.getElementById('answerInput');
+            const enteredAnswer = answerInput.value.toLowerCase().trim();
+
+            if (enteredAnswer === correctAnswer) {
+                // 答案正确
+                screenOverlay.classList.add('flash');
+
+                setTimeout(() => {
+                    screenOverlay.classList.remove('flash');
+                    // 这里可以添加下一步的逻辑
+                    answerInput.value = '';
+                }, 600);
+            } else {
+                // 答案错误 - 清除并晃动
+                textContent.classList.add('shake');
+                answerInput.value = '';
+
+                setTimeout(() => {
+                    textContent.classList.remove('shake');
+                    answerInput.focus();
+                }, 500);
+            }
         }
 
         // 便签拖动功能
