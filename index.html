@@ -243,6 +243,76 @@
 
         // 延迟1秒后开始打字
         setTimeout(typeWriter, 1000);
+
+        // 便签拖动功能
+        const stickyNotes = document.querySelectorAll('.sticky-note');
+
+        stickyNotes.forEach(note => {
+            let isDragging = false;
+            let currentX;
+            let currentY;
+            let initialX;
+            let initialY;
+            let xOffset = 0;
+            let yOffset = 0;
+
+            note.addEventListener('mousedown', dragStart);
+            document.addEventListener('mousemove', drag);
+            document.addEventListener('mouseup', dragEnd);
+
+            function dragStart(e) {
+                initialX = e.clientX - xOffset;
+                initialY = e.clientY - yOffset;
+
+                if (e.target === note) {
+                    isDragging = true;
+                    note.style.cursor = 'grabbing';
+                    note.style.zIndex = '1000';
+                }
+            }
+
+            function drag(e) {
+                if (isDragging) {
+                    e.preventDefault();
+
+                    currentX = e.clientX - initialX;
+                    currentY = e.clientY - initialY;
+
+                    xOffset = currentX;
+                    yOffset = currentY;
+
+                    setTranslate(currentX, currentY, note);
+                }
+            }
+
+            function dragEnd(e) {
+                if (isDragging) {
+                    initialX = currentX;
+                    initialY = currentY;
+                    isDragging = false;
+                    note.style.cursor = 'grab';
+                    note.style.zIndex = '10';
+                }
+            }
+
+            function setTranslate(xPos, yPos, el) {
+                const computedStyle = window.getComputedStyle(el);
+                const transform = computedStyle.transform;
+
+                // 保留原有的rotate变换
+                let rotation = '';
+                if (transform !== 'none') {
+                    const values = transform.split('(')[1].split(')')[0].split(',');
+                    const angle = Math.round(Math.atan2(values[1], values[0]) * (180/Math.PI));
+                    rotation = ` rotate(${angle}deg)`;
+                }
+
+                el.style.transform = `translate(${xPos}px, ${yPos}px)${rotation}`;
+            }
+
+            // 设置初始cursor样式
+            note.style.cursor = 'grab';
+        });
     </script>
 </body>
 </html>
