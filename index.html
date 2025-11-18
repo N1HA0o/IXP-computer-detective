@@ -36,6 +36,23 @@
             object-fit: contain;
         }
 
+        .desktop-background {
+            position: absolute;
+            z-index: 1;
+        }
+
+        .desktop-background img {
+            width: auto;
+            height: auto;
+            max-width: 100%;
+            max-height: 100%;
+        }
+
+        .image-section > img {
+            position: relative;
+            z-index: 2;
+        }
+
         .screen-overlay {
             position: absolute;
             width: 25.44%;
@@ -296,6 +313,9 @@
 </head>
 <body>
     <div class="image-section">
+        <div class="desktop-background">
+            <img src="桌面.png" alt="桌面背景" onerror="this.style.display='none';">
+        </div>
         <img src="老式苹果电脑.png" alt="老式苹果电脑" id="computerImage" onerror="this.style.display='none'; this.parentElement.innerHTML='<div class=\'placeholder\'>请将图片文件 \"老式苹果电脑.png\" 放入项目目录</div>'">
 
         <div class="screen-overlay" id="screenOverlay">
