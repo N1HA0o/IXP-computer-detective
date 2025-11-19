@@ -579,11 +579,11 @@
                 ctx.globalCompositeOperation = 'destination-out';
 
                 // 创建径向渐变实现柔和的橡皮擦效果
-                const eraserRadius = 42;
+                const eraserRadius = 46;
                 const gradient = ctx.createRadialGradient(canvasX, canvasY, 0, canvasX, canvasY, eraserRadius);
                 // 每次只擦除一小部分透明度，需要多次滑动才能完全擦除
-                gradient.addColorStop(0, 'rgba(0, 0, 0, 0.18)'); // 中心擦除18%
-                gradient.addColorStop(0.5, 'rgba(0, 0, 0, 0.09)'); // 中间擦除9%
+                gradient.addColorStop(0, 'rgba(0, 0, 0, 0.234)'); // 中心擦除23.4%
+                gradient.addColorStop(0.5, 'rgba(0, 0, 0, 0.117)'); // 中间擦除11.7%
                 gradient.addColorStop(1, 'rgba(0, 0, 0, 0)'); // 边缘不擦除
 
                 ctx.fillStyle = gradient;
