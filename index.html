@@ -454,10 +454,12 @@
         // 点击时切换手的图像
         document.addEventListener('mousedown', function() {
             customCursorImg.src = '手捏.png';
+            customCursor.style.transform = 'translate(-50%, -50%)';
         });
 
         document.addEventListener('mouseup', function() {
             customCursorImg.src = '手.png';
+            customCursor.style.transform = 'translate(-50%, -10%)';
         });
 
         // 雪花屏效果
