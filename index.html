@@ -81,6 +81,7 @@
             pointer-events: none;
             opacity: 0;
             transition: opacity 0.3s;
+            transform: translate(-50%, -50%);
         }
 
         .tissue-hand img {
@@ -752,16 +753,16 @@
         const tissueHand = document.getElementById('tissueHand');
 
         tissueBox.addEventListener('click', function(e) {
-            // 获取抽纸盒的位置
-            const boxRect = tissueBox.getBoundingClientRect();
+            // 获取点击位置
+            const clickX = e.clientX;
+            const clickY = e.clientY;
 
-            // 定位手的图片（在抽纸盒上方，手臂延伸到画面右边）
-            // 往上移动70%屏幕高度（35% + 35%）
-            tissueHand.style.right = '-50%'; // 手臂延伸到画面右边外
-            tissueHand.style.top = (boxRect.top - 100 - window.innerHeight * 0.70) + 'px';
+            // 定位手的图片（中间部分对准鼠标点击位置）
+            tissueHand.style.left = clickX + 'px';
+            tissueHand.style.top = clickY + 'px';
             tissueHand.style.opacity = '1';
 
-            console.log('Hand showing - top:', tissueHand.style.top, 'right:', tissueHand.style.right, 'opacity:', tissueHand.style.opacity);
+            console.log('Hand showing - left:', tissueHand.style.left, 'top:', tissueHand.style.top, 'opacity:', tissueHand.style.opacity);
 
             // 500ms后手消失
             setTimeout(() => {
