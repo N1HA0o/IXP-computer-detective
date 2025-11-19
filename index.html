@@ -434,6 +434,7 @@
     <script>
         // 自定义光标跟随鼠标
         const customCursor = document.getElementById('customCursor');
+        const customCursorImg = customCursor.querySelector('img');
 
         document.addEventListener('mousemove', function(e) {
             customCursor.style.left = e.clientX + 'px';
@@ -447,6 +448,15 @@
 
         document.addEventListener('mouseleave', function() {
             customCursor.style.opacity = '0';
+        });
+
+        // 点击时切换手的图像
+        document.addEventListener('mousedown', function() {
+            customCursorImg.src = '抽纸的手.png';
+        });
+
+        document.addEventListener('mouseup', function() {
+            customCursorImg.src = '手.png';
         });
 
         // 雪花屏效果
