@@ -396,14 +396,17 @@
             position: absolute;
             top: -2%;
             left: 68%;
-            font-family: 'Brush Script MT', cursive, 'Comic Sans MS', sans-serif;
-            font-size: 28px;
-            color: #2e5c8a;
             transform: rotate(-3deg);
             z-index: 100;
             pointer-events: none;
-            text-shadow: 1px 1px 0px rgba(46, 92, 138, 0.3);
-            letter-spacing: 1px;
+            width: auto;
+            height: auto;
+        }
+
+        .whiteboard-text img {
+            max-width: 300px;
+            height: auto;
+            display: block;
         }
     </style>
 </head>
@@ -415,7 +418,9 @@
         <div class="whiteboard-background">
             <img src="白板.png" alt="白板背景" onerror="this.style.display='none';">
         </div>
-        <div class="whiteboard-text">do remember to remove the stiker</div>
+        <div class="whiteboard-text">
+            <img src="白板字.png" alt="白板文字" onerror="this.style.display='none';">
+        </div>
         <div class="desktop-background">
             <img src="桌面.png" alt="桌面背景" onerror="this.style.display='none';">
         </div>
