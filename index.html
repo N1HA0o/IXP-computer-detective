@@ -756,8 +756,9 @@
             const boxRect = tissueBox.getBoundingClientRect();
 
             // 定位手的图片（在抽纸盒上方，手臂延伸到画面右边）
+            // 往上移动35%屏幕高度
             tissueHand.style.right = '-50%'; // 手臂延伸到画面右边外
-            tissueHand.style.top = (boxRect.top - 100) + 'px';
+            tissueHand.style.top = (boxRect.top - 100 - window.innerHeight * 0.35) + 'px';
             tissueHand.style.opacity = '1';
 
             console.log('Hand showing - top:', tissueHand.style.top, 'right:', tissueHand.style.right, 'opacity:', tissueHand.style.opacity);
