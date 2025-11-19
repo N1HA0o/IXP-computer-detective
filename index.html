@@ -114,6 +114,22 @@
             }
         }
 
+        .tissue-hand {
+            position: absolute;
+            height: 120px;
+            width: auto;
+            z-index: 4;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+
+        .tissue-hand img {
+            height: 100%;
+            width: auto;
+            object-fit: contain;
+        }
+
         .screen-overlay {
             position: absolute;
             width: 25.44%;
@@ -381,6 +397,9 @@
         </div>
         <div class="tissue-box">
             <img src="抽纸.png" alt="抽纸" onerror="this.style.display='none';">
+        </div>
+        <div class="tissue-hand" id="tissueHand">
+            <img src="抽纸的手.png" alt="抽纸的手" onerror="this.style.display='none';">
         </div>
         <img src="老式苹果电脑.png" alt="老式苹果电脑" id="computerImage" onerror="this.style.display='none'; this.parentElement.innerHTML='<div class=\'placeholder\'>请将图片文件 \"老式苹果电脑.png\" 放入项目目录</div>'">
 
@@ -723,61 +742,73 @@
 
         // 抽纸盒点击功能
         const tissueBox = document.querySelector('.tissue-box');
+        const tissueHand = document.getElementById('tissueHand');
 
         tissueBox.addEventListener('click', function(e) {
-            // 创建纸巾元素
-            const tissue = document.createElement('div');
-            tissue.className = 'tissue-paper';
-
             // 获取抽纸盒的位置
             const boxRect = tissueBox.getBoundingClientRect();
 
-            // 设置纸巾初始位置（从抽纸盒顶部弹出）
-            tissue.style.left = (boxRect.left + boxRect.width / 2 - 30) + 'px';
-            tissue.style.top = (boxRect.top - 40) + 'px';
+            // 定位手的图片（在抽纸盒上方，手臂延伸到画面右边）
+            tissueHand.style.right = '-50%'; // 手臂延伸到画面右边外
+            tissueHand.style.top = (boxRect.top - 60) + 'px';
+            tissueHand.style.opacity = '1';
 
-            // 添加随机水平偏移
-            const randomX = (Math.random() - 0.5) * 100;
+            // 等待300ms后创建纸巾并让手消失
+            setTimeout(() => {
+                // 创建纸巾元素
+                const tissue = document.createElement('div');
+                tissue.className = 'tissue-paper';
 
-            // 添加到页面
-            document.body.appendChild(tissue);
+                // 设置纸巾初始位置（从抽纸盒顶部弹出）
+                tissue.style.left = (boxRect.left + boxRect.width / 2 - 30) + 'px';
+                tissue.style.top = (boxRect.top - 40) + 'px';
 
-            // 计算掉落距离（到屏幕底部）
-            const fallDistance = window.innerHeight - boxRect.top + 40;
+                // 添加随机水平偏移
+                const randomX = (Math.random() - 0.5) * 100;
 
-            // 使用requestAnimationFrame实现重力效果
-            let startTime = null;
-            let initialY = boxRect.top - 40;
-            const duration = 1500; // 掉落时间 1.5秒
-            const gravity = 0.0015; // 重力加速度
+                // 添加到页面
+                document.body.appendChild(tissue);
 
-            function animateFall(currentTime) {
-                if (!startTime) startTime = currentTime;
-                const elapsed = currentTime - startTime;
-                const progress = Math.min(elapsed / duration, 1);
+                // 手消失
+                tissueHand.style.opacity = '0';
 
-                // 使用重力公式计算位置
-                const distance = fallDistance * Math.pow(progress, 2);
-                const rotation = progress * 720 + (Math.random() - 0.5) * 30;
+                // 计算掉落距离（到屏幕底部）
+                const fallDistance = window.innerHeight - boxRect.top + 40;
 
-                tissue.style.transform = `translateY(${distance}px) translateX(${randomX * progress}px) rotate(${rotation}deg)`;
-                tissue.style.opacity = 1 - progress * 0.1;
+                // 使用requestAnimationFrame实现重力效果
+                let startTime = null;
+                let initialY = boxRect.top - 40;
+                const duration = 1500; // 掉落时间 1.5秒
+                const gravity = 0.0015; // 重力加速度
 
-                if (progress < 1) {
-                    requestAnimationFrame(animateFall);
-                } else {
-                    // 动画结束后，3秒后移除纸巾
-                    setTimeout(() => {
-                        tissue.style.transition = 'opacity 0.5s';
-                        tissue.style.opacity = '0';
+                function animateFall(currentTime) {
+                    if (!startTime) startTime = currentTime;
+                    const elapsed = currentTime - startTime;
+                    const progress = Math.min(elapsed / duration, 1);
+
+                    // 使用重力公式计算位置
+                    const distance = fallDistance * Math.pow(progress, 2);
+                    const rotation = progress * 720 + (Math.random() - 0.5) * 30;
+
+                    tissue.style.transform = `translateY(${distance}px) translateX(${randomX * progress}px) rotate(${rotation}deg)`;
+                    tissue.style.opacity = 1 - progress * 0.1;
+
+                    if (progress < 1) {
+                        requestAnimationFrame(animateFall);
+                    } else {
+                        // 动画结束后，3秒后移除纸巾
                         setTimeout(() => {
-                            tissue.remove();
-                        }, 500);
-                    }, 3000);
+                            tissue.style.transition = 'opacity 0.5s';
+                            tissue.style.opacity = '0';
+                            setTimeout(() => {
+                                tissue.remove();
+                            }, 500);
+                        }, 3000);
+                    }
                 }
-            }
 
-            requestAnimationFrame(animateFall);
+                requestAnimationFrame(animateFall);
+            }, 300);
         });
     </script>
 </body>
