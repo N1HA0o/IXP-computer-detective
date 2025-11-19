@@ -391,6 +391,20 @@
             -webkit-mask-image: linear-gradient(to bottom, rgba(0,0,0,1) 0%, rgba(0,0,0,1) 35%, rgba(0,0,0,0) 55%, rgba(0,0,0,0) 100%);
             mask-image: linear-gradient(to bottom, rgba(0,0,0,1) 0%, rgba(0,0,0,1) 35%, rgba(0,0,0,0) 55%, rgba(0,0,0,0) 100%);
         }
+
+        .whiteboard-text {
+            position: absolute;
+            top: 58%;
+            left: 58%;
+            font-family: 'Brush Script MT', cursive, 'Comic Sans MS', sans-serif;
+            font-size: 28px;
+            color: #2e5c8a;
+            transform: rotate(-3deg);
+            z-index: 1;
+            pointer-events: none;
+            text-shadow: 1px 1px 0px rgba(46, 92, 138, 0.3);
+            letter-spacing: 1px;
+        }
     </style>
 </head>
 <body>
@@ -401,6 +415,7 @@
         <div class="whiteboard-background">
             <img src="白板.png" alt="白板背景" onerror="this.style.display='none';">
         </div>
+        <div class="whiteboard-text">do remember to remove the stiker</div>
         <div class="desktop-background">
             <img src="桌面.png" alt="桌面背景" onerror="this.style.display='none';">
         </div>
