@@ -398,15 +398,27 @@
             left: 68%;
             transform: rotate(-3deg);
             z-index: 100;
-            pointer-events: none;
+            pointer-events: auto;
             width: auto;
             height: auto;
+        }
+
+        .whiteboard-text-container {
+            position: relative;
+            display: inline-block;
         }
 
         .whiteboard-text img {
             max-width: 300px;
             height: auto;
+            display: none;
+        }
+
+        .whiteboard-text canvas {
+            max-width: 300px;
+            height: auto;
             display: block;
+            cursor: pointer;
         }
     </style>
 </head>
@@ -418,8 +430,11 @@
         <div class="whiteboard-background">
             <img src="白板.png" alt="白板背景" onerror="this.style.display='none';">
         </div>
-        <div class="whiteboard-text">
-            <img src="白板字.png" alt="白板文字" onerror="this.style.display='none';">
+        <div class="whiteboard-text" id="whiteboardText">
+            <div class="whiteboard-text-container">
+                <img src="白板字.png" alt="白板文字" id="whiteboardTextImg" onerror="this.style.display='none';">
+                <canvas id="whiteboardTextCanvas"></canvas>
+            </div>
         </div>
         <div class="desktop-background">
             <img src="桌面.png" alt="桌面背景" onerror="this.style.display='none';">
@@ -517,6 +532,109 @@
             customCursorImg.style.webkitMaskImage = 'linear-gradient(to bottom, rgba(0,0,0,1) 0%, rgba(0,0,0,1) 35%, rgba(0,0,0,0) 55%, rgba(0,0,0,0) 100%)';
             customCursorImg.style.maskImage = 'linear-gradient(to bottom, rgba(0,0,0,1) 0%, rgba(0,0,0,1) 35%, rgba(0,0,0,0) 55%, rgba(0,0,0,0) 100%)';
         });
+
+        // 白板字橡皮擦效果
+        const whiteboardTextImg = document.getElementById('whiteboardTextImg');
+        const whiteboardTextCanvas = document.getElementById('whiteboardTextCanvas');
+
+        if (whiteboardTextImg && whiteboardTextCanvas) {
+            let isErasing = false;
+            let lastX = 0;
+            let lastY = 0;
+
+            // 图片加载完成后绘制到canvas
+            function initCanvas() {
+                const ctx = whiteboardTextCanvas.getContext('2d');
+                // 设置canvas的实际像素尺寸为图片的原始尺寸
+                whiteboardTextCanvas.width = whiteboardTextImg.naturalWidth;
+                whiteboardTextCanvas.height = whiteboardTextImg.naturalHeight;
+                // 绘制图片到canvas
+                ctx.drawImage(whiteboardTextImg, 0, 0);
+            }
+
+            // 如果图片已经加载完成
+            if (whiteboardTextImg.complete && whiteboardTextImg.naturalWidth > 0) {
+                initCanvas();
+            } else {
+                // 等待图片加载完成
+                whiteboardTextImg.onload = function() {
+                    initCanvas();
+                };
+            }
+
+            // 橡皮擦功能 - 渐进式擦除
+            function erase(clientX, clientY) {
+                const ctx = whiteboardTextCanvas.getContext('2d');
+                const rect = whiteboardTextCanvas.getBoundingClientRect();
+
+                // 计算canvas实际尺寸与显示尺寸的比例
+                const scaleX = whiteboardTextCanvas.width / rect.width;
+                const scaleY = whiteboardTextCanvas.height / rect.height;
+
+                // 将屏幕坐标转换为canvas坐标
+                const canvasX = (clientX - rect.left) * scaleX;
+                const canvasY = (clientY - rect.top) * scaleY;
+
+                // 使用destination-out模式擦除
+                ctx.globalCompositeOperation = 'destination-out';
+
+                // 创建径向渐变实现柔和的橡皮擦效果
+                const eraserRadius = 30;
+                const gradient = ctx.createRadialGradient(canvasX, canvasY, 0, canvasX, canvasY, eraserRadius);
+                // 每次只擦除一小部分透明度，需要多次滑动才能完全擦除
+                gradient.addColorStop(0, 'rgba(0, 0, 0, 0.12)'); // 中心擦除12%
+                gradient.addColorStop(0.5, 'rgba(0, 0, 0, 0.06)'); // 中间擦除6%
+                gradient.addColorStop(1, 'rgba(0, 0, 0, 0)'); // 边缘不擦除
+
+                ctx.fillStyle = gradient;
+                ctx.beginPath();
+                ctx.arc(canvasX, canvasY, eraserRadius, 0, Math.PI * 2);
+                ctx.fill();
+
+                // 恢复正常绘制模式
+                ctx.globalCompositeOperation = 'source-over';
+            }
+
+            // 鼠标按下 - 开始擦除
+            whiteboardTextCanvas.addEventListener('mousedown', function(e) {
+                e.stopPropagation(); // 阻止事件冒泡，防止触发手捏效果
+                isErasing = true;
+                lastX = e.clientX;
+                lastY = e.clientY;
+                erase(e.clientX, e.clientY);
+            });
+
+            // 鼠标移动 - 连续擦除
+            whiteboardTextCanvas.addEventListener('mousemove', function(e) {
+                if (isErasing) {
+                    // 在上一个点和当前点之间插值，保证连续平滑的擦除
+                    const dx = e.clientX - lastX;
+                    const dy = e.clientY - lastY;
+                    const distance = Math.sqrt(dx * dx + dy * dy);
+                    const steps = Math.max(1, Math.floor(distance / 3)); // 每3像素一个擦除点
+
+                    for (let i = 0; i <= steps; i++) {
+                        const x = lastX + (dx * i / steps);
+                        const y = lastY + (dy * i / steps);
+                        erase(x, y);
+                    }
+
+                    lastX = e.clientX;
+                    lastY = e.clientY;
+                }
+            });
+
+            // 鼠标松开 - 停止擦除
+            whiteboardTextCanvas.addEventListener('mouseup', function(e) {
+                e.stopPropagation(); // 阻止事件冒泡
+                isErasing = false;
+            });
+
+            // 鼠标离开canvas - 停止擦除
+            whiteboardTextCanvas.addEventListener('mouseleave', function() {
+                isErasing = false;
+            });
+        }
 
         // 雪花屏效果
         const canvas = document.getElementById('staticCanvas');
