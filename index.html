@@ -708,17 +708,17 @@
             const boxRect = tissueBox.getBoundingClientRect();
 
             // 定位手的图片（在抽纸盒上方，手臂延伸到画面右边）
-            tissueHand.style.right = '-30%'; // 手臂延伸到画面右边外
+            tissueHand.style.right = '-50%'; // 手臂延伸到画面右边外
             tissueHand.style.top = (boxRect.top - 100) + 'px';
             tissueHand.style.opacity = '1';
 
-            console.log('Hand showing - top:', tissueHand.style.top, 'right:', tissueHand.style.right);
+            console.log('Hand showing - top:', tissueHand.style.top, 'right:', tissueHand.style.right, 'opacity:', tissueHand.style.opacity);
 
-            // 1000ms后手消失
+            // 500ms后手消失
             setTimeout(() => {
                 tissueHand.style.opacity = '0';
-                console.log('Hand hiding');
-            }, 1000);
+                console.log('Hand hiding - opacity:', tissueHand.style.opacity);
+            }, 500);
         });
     </script>
 </body>
